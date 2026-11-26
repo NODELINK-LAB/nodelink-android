@@ -24,6 +24,13 @@ class WalletScreen(private val a: Activity, box: LinearLayout, private val note:
  private fun saveSent(l: List<JSONObject>) = vault.put("evm_sent", JSONArray(l.takeLast(20)).toString())
  private fun button(s: String, box: LinearLayout, fill:Int=Ui.RAISED, f: () -> Unit):Button = Button(a).apply { text = s; setOnClickListener { f() };box.addView(this);Ui.button(this,fill) }
 
+ private fun action(row:LinearLayout,label:String,icon:String,run:()->Unit){
+  val tile=LinearLayout(a).apply{orientation=1;gravity=android.view.Gravity.CENTER;minimumHeight=Ui.dp(a,64);contentDescription=label
+   background=Ui.gradient(a,Ui.RAISED,Ui.SURFACE,16,Ui.LINE);setOnClickListener{run()}
+   addView(NeonIcon(a,icon),Ui.lp(Ui.dp(a,23),Ui.dp(a,23)));addView(Ui.title(a,label,11f).apply{gravity=android.view.Gravity.CENTER},Ui.lp(-1,-2).apply{topMargin=Ui.dp(a,4)})}
+  row.addView(tile,Ui.lp(0,-2,1f).apply{setMargins(Ui.dp(a,3),Ui.dp(a,4),Ui.dp(a,3),Ui.dp(a,4))})
+ }
+
  fun addHomeSummary(home:LinearLayout,index:Int,open:()->Unit){
   val group=LinearLayout(a).apply{orientation=1}
   group.addView(Ui.card(a).apply{background=Ui.gradient(a,Ui.RAISED,Ui.SURFACE,17,0xFF50A846.toInt());addView(Ui.title(a,"NODE WALLET  ›",16f));addView(Ui.caption(a,"nodelink-1 (chain 778001)"));addView(Ui.caption(a,"Balance"));addView(homeBalance);setOnClickListener{open()}})
@@ -44,8 +51,8 @@ class WalletScreen(private val a: Activity, box: LinearLayout, private val note:
   box.addView(Ui.card(a).apply{background=Ui.gradient(a,0xFF123E23.toInt(),Ui.BG,18,0xFF60B850.toInt());addView(Ui.caption(a,"Your Balance"));addView(status);addView(Ui.caption(a,"NODE · nodelink-1"))})
   val sendPanel=Ui.card(a)
   val actions=LinearLayout(a)
-  button("Send",actions){sendPanel.visibility=if(sendPanel.visibility==android.view.View.VISIBLE)android.view.View.GONE else android.view.View.VISIBLE}
-  button("Receive",actions){AlertDialog.Builder(a).setTitle("Receive NODE").setMessage(keys.address).setPositiveButton("Copy address"){_,_->
+  action(actions,"Send","send"){sendPanel.visibility=if(sendPanel.visibility==android.view.View.VISIBLE)android.view.View.GONE else android.view.View.VISIBLE}
+  action(actions,"Receive","receive"){AlertDialog.Builder(a).setTitle("Receive NODE").setMessage(keys.address).setPositiveButton("Copy address"){_,_->
    a.getSystemService(android.content.ClipboardManager::class.java).setPrimaryClip(android.content.ClipData.newPlainText("NODE address",keys.address));note("Wallet address copied.")}.setNegativeButton("Close",null).show()}
   box.addView(Ui.section(a,"Your Assets"))
   box.addView(Ui.card(a).apply{addView(Ui.title(a,"◈  NODE",16f));addView(address)})
@@ -90,14 +97,14 @@ class WalletScreen(private val a: Activity, box: LinearLayout, private val note:
       }.show()
     }
   }
-  button("Refresh", actions) {
+  action(actions,"Refresh","refresh") {
    background("Contacting validator…") {
     chain.checkChain(); balance = chain.balance(keys.address)
     saveSent(sent().map { j -> if (j.getString("state") != "Pending") j else chain.receipt(j.getString("hash"))?.let { j.put("state", if (it) "Confirmed" else "Failed") } ?: j })
     "Balance updated."
    }
   }
-  button("More",actions){settings.visibility=if(settings.visibility==android.view.View.VISIBLE)android.view.View.GONE else android.view.View.VISIBLE}
+  action(actions,"More","more"){settings.visibility=if(settings.visibility==android.view.View.VISIBLE)android.view.View.GONE else android.view.View.VISIBLE}
   box.addView(actions,2,Ui.lp());box.addView(Ui.section(a,"Recent Transfers"));box.addView(list); refresh()
  }
 

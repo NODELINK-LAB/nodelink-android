@@ -26,9 +26,10 @@ class ContactControls(private val a:Activity,box:LinearLayout,form:LinearLayout,
  fun refresh(){list.removeAllViews();val b=all();count.text="My Contacts (${b.length()})";val query=search.text.toString().trim();val names=b.keys().asSequence().filter{it.contains(query,ignoreCase=true)}.sorted().toList();names.forEach{n->val fp=b.getString(n)
   val info=LinearLayout(a).apply{orientation=1;setPadding(Ui.dp(a,12),0,Ui.dp(a,8),0)
    addView(Ui.title(a,n,16f));addView(Ui.caption(a,Ui.nl(fp)+if(Blocklist.has(fp))" · BLOCKED" else ""))}
-  fun action(icon:String,label:String,where:String)=TextView(a).apply{tag=Ui.DONE;text=icon;contentDescription="$label $n";textSize=18f;setTextColor(Ui.BRAND);gravity=Gravity.CENTER;background=Ui.oval(Ui.RAISED);setOnClickListener{select(n,fp,where)}}
+  fun action(icon:String,label:String,where:String)=FrameLayout(a).apply{contentDescription="$label $n";background=Ui.oval(Ui.RAISED);setOnClickListener{select(n,fp,where)}
+   addView(NeonIcon(a,icon),FrameLayout.LayoutParams(Ui.dp(a,20),Ui.dp(a,20),Gravity.CENTER))}
   list.addView(LinearLayout(a).apply{gravity=Gravity.CENTER_VERTICAL;setPadding(Ui.dp(a,4),Ui.dp(a,6),Ui.dp(a,4),Ui.dp(a,6))
-   addView(Ui.avatar(a,n,44));addView(info,Ui.lp(0,-2,1f));addView(action("☎","Call","call"),Ui.lp(Ui.dp(a,44),Ui.dp(a,44)));addView(action("◌","Chat with","chat"),Ui.lp(Ui.dp(a,44),Ui.dp(a,44)).apply{leftMargin=Ui.dp(a,8)})
+   addView(Ui.avatar(a,n,44));addView(info,Ui.lp(0,-2,1f));addView(action("call","Call","call"),Ui.lp(Ui.dp(a,44),Ui.dp(a,44)));addView(action("chat","Chat with","chat"),Ui.lp(Ui.dp(a,44),Ui.dp(a,44)).apply{leftMargin=Ui.dp(a,8)})
    setOnClickListener{select(n,fp,"chat")}
    setOnLongClickListener{vault.put("book",all().apply{remove(n)}.toString());refresh();note("Deleted $n");true}});list.addView(android.view.View(a).apply{setBackgroundColor(Ui.LINE)},Ui.lp(-1,Ui.dp(a,1)))}
   if(names.isEmpty())list.addView(Ui.caption(a,if(b.length()==0)"No contacts yet. Open New contact to add one." else "No matching contacts."))}

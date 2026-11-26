@@ -6,10 +6,15 @@ import android.view.View
 import kotlin.math.*
 
 class NeonArt(c:Context, private val mode:String):View(c){
- private val p=Paint(Paint.ANTI_ALIAS_FLAG)
+ private val p=Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+ private val bitmap=if(mode=="home"||mode=="wallet")context.assets.open("neon/$mode.b64").use{input->
+  android.util.Base64InputStream(input,android.util.Base64.DEFAULT).use{BitmapFactory.decodeStream(it)}
+ } else null
  init{importantForAccessibility=IMPORTANT_FOR_ACCESSIBILITY_NO}
  override fun onDraw(canvas:Canvas){
   super.onDraw(canvas); if(width==0||height==0)return
+  bitmap?.let{image->val scale=min(width.toFloat()/image.width,height.toFloat()/image.height);val w=image.width*scale;val h=image.height*scale
+   val left=(width-w)*.5f;val top=(height-h)*.5f;canvas.drawBitmap(image,null,RectF(left,top,left+w,top+h),p);return}
   val a=canvas; a.save(); a.scale(width/320f,height/160f)
   val cx=if(mode=="wallet")160f else 205f
   val glow=if(mode=="wallet")75f else 83f

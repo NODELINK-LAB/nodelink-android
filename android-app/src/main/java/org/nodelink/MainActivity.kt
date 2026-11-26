@@ -38,7 +38,7 @@ class MainActivity:Activity(){
   fun show(p:LinearLayout){scroll.visibility=android.view.View.VISIBLE;web.view.visibility=android.view.View.GONE;liveNote.visibility=if(p===home||p===identityPage)android.view.View.GONE else android.view.View.VISIBLE;pages.forEach{it.visibility=if(it===p)android.view.View.VISIBLE else android.view.View.GONE};nav.select(if(p===identityPage)0 else if(p===walletPage)4 else tabs.indexOf(p));scroll.scrollTo(0,0);backFromDetail=null;if(p===chatPage)onChat();if(p===callPage)onCall()}
   fun openWallet(){show(walletPage);backFromDetail={show(walletLanding)}}
   fun openIdentity(){show(identityPage);backFromDetail={show(home)}}
-  nav=NavBar(this,listOf("⌂" to "Home","☏" to "Chats","☎" to "Calls","♟" to "Contacts","▣" to "Wallet","⌕" to "Explorer")){if(it==5)showWeb() else show(tabs[it])}
+  nav=NavBar(this,listOf("home" to "Home","chat" to "Chats","call" to "Calls","contacts" to "Contacts","wallet" to "Wallet","explorer" to "Explorer")){if(it==5)showWeb() else show(tabs[it])}
   setContentView(LinearLayout(this).apply{orientation=1;setBackgroundColor(Ui.BG);addView(scroll,Ui.lp(-1,0,1f));addView(web.view,Ui.lp(-1,0,1f));addView(liveNote);addView(nav.view)
    setOnApplyWindowInsetsListener{v,ins->if(Build.VERSION.SDK_INT>=30){val b=ins.getInsets(android.view.WindowInsets.Type.systemBars() or android.view.WindowInsets.Type.ime());v.setPadding(b.left,b.top,b.right,b.bottom)};ins}})
   root.viewTreeObserver.addOnGlobalLayoutListener{Ui.style(root)}   // themes controls as screens add them
@@ -99,7 +99,7 @@ class MainActivity:Activity(){
   Ui.button(btn("Hang up"){link.hangUp()},Ui.RED)
   label("On both phones, pick each other in Contacts and connect from Home. When the top shows \"Linked\", tap Call and the other phone rings.")
   call.addTo(box)
-  walletLanding.addView(Ui.heading(this,"NODELINK"));walletLanding.addView(NeonArt(this,"wallet"),Ui.lp(-1,Ui.dp(this,250)))
+  walletLanding.addView(Ui.heading(this,"NODELINK"));walletLanding.addView(NeonArt(this,"wallet"),Ui.lp(-1,Ui.dp(this,216)))
   walletLanding.addView(Ui.heading(this,"Your Digital Wallet"));walletLanding.addView(Ui.caption(this,"Send and receive NODE on nodelink-1").apply{gravity=android.view.Gravity.CENTER})
   walletLanding.addView(Ui.button(Button(this).apply{text="Manage Wallet";setOnClickListener{openWallet()}},Ui.BRAND))
   walletPage.addView(Ui.row(this,Ui.button(Button(this).apply{text="‹  Back";setOnClickListener{show(walletLanding)}}),Ui.heading(this,"Wallet")))

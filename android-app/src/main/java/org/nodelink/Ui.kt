@@ -38,7 +38,7 @@ object Ui{
  fun gradient(c:Context,start:Int,end:Int,radius:Int,stroke:Int=0)=GradientDrawable(GradientDrawable.Orientation.TL_BR,intArrayOf(start,end)).apply{cornerRadius=dp(c,radius).toFloat();if(stroke!=0)setStroke(dp(c,1),stroke)}
  fun heading(c:Context,s:String)=title(c,s,23f).apply{gravity=Gravity.CENTER;setPadding(0,dp(c,9),0,dp(c,13))}
  fun topBar(c:Context,status:TextView)=LinearLayout(c).apply{orientation=1;gravity=Gravity.CENTER_HORIZONTAL;setPadding(dp(c,16),0,dp(c,16),dp(c,12))
-  addView(NeonArt(c,"home"),lp(-1,dp(c,113)));addView(title(c,"NODELINK",31f).apply{letterSpacing=.08f;gravity=Gravity.CENTER})
+  addView(NeonArt(c,"home"),lp(-1,dp(c,96)));addView(title(c,"NODELINK",31f).apply{letterSpacing=.08f;gravity=Gravity.CENTER})
   status.tag=DONE;status.setTextColor(TEXT);status.textSize=12f;status.background=gradient(c,SURFACE,RAISED,24,0xFF54A342.toInt());status.setPadding(dp(c,15),dp(c,7),dp(c,15),dp(c,7));status.gravity=Gravity.CENTER
   addView(status,lp(-2,-2).apply{topMargin=dp(c,6)})}
 
