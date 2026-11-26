@@ -9,7 +9,7 @@ import org.nodelink.ledger.*
 import java.math.BigInteger
 import java.security.SecureRandom
 
-// NODE wallet on nodelink-1 (EVM chain 778001). The key comes from the recovery seed kept encrypted on the phone;
+// NDX wallet on nodelink-1 (EVM chain 778001). The key comes from the recovery seed kept encrypted on the phone;
 // transfers are signed here and sent through a validator's JSON-RPC.
 class WalletScreen(private val a: Activity, box: LinearLayout, private val note: (String) -> Unit, back: () -> Unit) {
  private val vault = Vault(a, "wallet"); private val chain = WalletChain(a)
@@ -37,7 +37,7 @@ class WalletScreen(private val a: Activity, box: LinearLayout, private val note:
   val group=LinearLayout(a).apply{orientation=1}
   group.addView(Ui.card(a).apply{background=Ui.gradient(a,Ui.RAISED,Ui.SURFACE,17,0xFF50A846.toInt())
    addView(LinearLayout(a).apply{gravity=android.view.Gravity.CENTER_VERTICAL;addView(NeonIcon(a,"wallet"),Ui.lp(Ui.dp(a,34),Ui.dp(a,34)))
-    addView(LinearLayout(a).apply{orientation=1;setPadding(Ui.dp(a,14),0,0,0);addView(Ui.title(a,"NODE WALLET",16f));addView(Ui.caption(a,"nodelink-1 (chain 778001)"))},Ui.lp(0,-2,1f))
+    addView(LinearLayout(a).apply{orientation=1;setPadding(Ui.dp(a,14),0,0,0);addView(Ui.title(a,"Nodelix Wallet",16f));addView(Ui.caption(a,"Nodelix Testnet (chain 778001)"))},Ui.lp(0,-2,1f))
     addView(NeonIcon(a,"next").apply{tint=Ui.TEXT},Ui.lp(Ui.dp(a,18),Ui.dp(a,18)))})
    addView(FrameLayout(a).apply{addView(NeonPanel.wave(a),FrameLayout.LayoutParams(Ui.dp(a,155),-1,android.view.Gravity.END));addView(LinearLayout(a).apply{orientation=1;addView(Ui.caption(a,"Balance"));addView(homeBalance)})},Ui.lp().apply{topMargin=Ui.dp(a,12)});setOnClickListener{open()}})
   button("↶  Show Recovery Phrase",group,Ui.BRAND){recovery.performClick()}
@@ -55,19 +55,19 @@ class WalletScreen(private val a: Activity, box: LinearLayout, private val note:
 
  init {
   box.addView(NeonPanel.header(a,"Wallet",back=back))
-  box.addView(Ui.card(a).apply{background=Ui.gradient(a,0xFF123E23.toInt(),Ui.BG,18,0xFF60B850.toInt());addView(Ui.caption(a,"Your Balance"));addView(status);addView(Ui.caption(a,"NODE · nodelink-1"));addView(NeonPanel.wave(a),Ui.lp(-1,Ui.dp(a,42)))})
+  box.addView(Ui.card(a).apply{background=Ui.gradient(a,0xFF123E23.toInt(),Ui.BG,18,0xFF60B850.toInt());addView(Ui.caption(a,"Your Balance"));addView(status);addView(Ui.caption(a,"NDX · Nodelix Testnet"));addView(NeonPanel.wave(a),Ui.lp(-1,Ui.dp(a,42)))})
   val sendPanel=Ui.card(a)
   val actions=LinearLayout(a)
   action(actions,"Send","send"){sendPanel.visibility=if(sendPanel.visibility==android.view.View.VISIBLE)android.view.View.GONE else android.view.View.VISIBLE}
-  action(actions,"Receive","receive"){AlertDialog.Builder(a).setTitle("Receive NODE").setMessage(keys.address).setPositiveButton("Copy address"){_,_->
-   a.getSystemService(android.content.ClipboardManager::class.java).setPrimaryClip(android.content.ClipData.newPlainText("NODE address",keys.address));note("Wallet address copied.")}.setNegativeButton("Close",null).show()}
+  action(actions,"Receive","receive"){AlertDialog.Builder(a).setTitle("Receive NDX").setMessage(keys.address).setPositiveButton("Copy address"){_,_->
+   a.getSystemService(android.content.ClipboardManager::class.java).setPrimaryClip(android.content.ClipData.newPlainText("NDX address",keys.address));note("Wallet address copied.")}.setNegativeButton("Close",null).show()}
   box.addView(Ui.section(a,"Your Assets"))
   box.addView(Ui.card(a).apply{addView(LinearLayout(a).apply{gravity=android.view.Gravity.CENTER_VERTICAL
-   addView(NeonIcon(a,"wallet"),Ui.lp(Ui.dp(a,23),Ui.dp(a,23)));addView(Ui.title(a,"NODE",16f),Ui.lp(0,-2,1f).apply{leftMargin=Ui.dp(a,9)});addView(assetBalance,Ui.lp(-2,-2))});addView(address,Ui.lp().apply{topMargin=Ui.dp(a,6)})})
+   addView(NeonIcon(a,"wallet"),Ui.lp(Ui.dp(a,23),Ui.dp(a,23)));addView(Ui.title(a,"NDX",16f),Ui.lp(0,-2,1f).apply{leftMargin=Ui.dp(a,9)});addView(assetBalance,Ui.lp(-2,-2))});addView(address,Ui.lp().apply{topMargin=Ui.dp(a,6)})})
   box.addView(sendPanel);box.addView(settings)
   recovery=button("Show recovery phrase", settings,Ui.BRAND) {
    val words = EvmWallet.recoveryPhrase(seed()).split(' ').mapIndexed { i, word -> "${i+1}. $word" }.chunked(3).joinToString("\n") { it.joinToString("    ") }
-   secure(AlertDialog.Builder(a).setTitle("24-word NODELINK recovery phrase").setMessage(words + "\n\nWrite the words down in order and keep them offline. Anyone with this phrase can spend your funds. Restore it in NODELINK only.").setPositiveButton("Done", null).create())
+   secure(AlertDialog.Builder(a).setTitle("24-word Nodelix recovery phrase").setMessage(words + "\n\nWrite the words down in order and keep them offline. Anyone with this phrase can spend your funds. Restore it in Nodelix only.").setPositiveButton("Done", null).create())
   }
   restore=button("Restore wallet", settings) {
    val input = EditText(a).apply {
@@ -77,7 +77,7 @@ class WalletScreen(private val a: Activity, box: LinearLayout, private val note:
     importantForAutofill = android.view.View.IMPORTANT_FOR_AUTOFILL_NO
     filters = arrayOf(android.text.InputFilter.LengthFilter(512))
    }
-   val dialog = AlertDialog.Builder(a).setTitle("Restore wallet").setMessage("Use a NODELINK backup only. This replaces the wallet on this phone. Back up your current wallet first.").setView(input).setNegativeButton("Cancel", null).setPositiveButton("Restore", null).create()
+   val dialog = AlertDialog.Builder(a).setTitle("Restore wallet").setMessage("Use a Nodelix backup only. This replaces the wallet on this phone. Back up your current wallet first.").setView(input).setNegativeButton("Cancel", null).setPositiveButton("Restore", null).create()
    secure(dialog)
    dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
     runCatching { val s = EvmWallet.recoverSeed(input.text.toString()); val restored = EvmWallet.fromSeed(s); vault.put("seed", Codec.hex(s)); vault.put("evm_sent", "[]"); keys = restored; balance = null; refresh() }
@@ -88,18 +88,18 @@ class WalletScreen(private val a: Activity, box: LinearLayout, private val note:
   val rpc = EditText(a).apply { hint = "Validator EVM RPC, e.g. http://192.168.1.10:8545"; isSingleLine = true; setText(chain.rpc) }; settings.addView(Ui.caption(a,"Validator EVM RPC"));settings.addView(rpc)
   network=button("Save network", settings) {
    runCatching { chain.configure(rpc.text.toString().trim()) }
-    .onSuccess { background("Checking network…") { chain.checkChain(); balance = chain.balance(keys.address); "Connected to NODELINK." } }
+    .onSuccess { background("Checking network…") { chain.checkChain(); balance = chain.balance(keys.address); "Connected to Nodelix." } }
     .onFailure { note(it.message ?: "Invalid RPC") }
   }
   sendPanel.visibility=android.view.View.GONE
   val to = EditText(a).apply { hint = "Recipient address (0x…)"; isSingleLine = true }; sendPanel.addView(to)
-  val amount = EditText(a).apply { hint = "Amount in NODE, e.g. 1.5"; inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL }; sendPanel.addView(amount)
-  button("Send NODE", sendPanel,Ui.BRAND) {
+  val amount = EditText(a).apply { hint = "Amount in NDX, e.g. 1.5"; inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL }; sendPanel.addView(amount)
+  button("Send NDX", sendPanel,Ui.BRAND) {
    val dest = to.text.toString().trim()
    runCatching { require(EvmWallet.isAddress(dest)) { "Recipient must be a 0x address (40 hex characters)" }; EvmWallet.parseNode(amount.text.toString()) }
     .onFailure { note(it.message ?: "Check the transfer") }
     .onSuccess { v ->
-     AlertDialog.Builder(a).setTitle("Send ${EvmWallet.formatNode(v)} NODE?").setMessage("To $dest\n\nA small fee is paid from your balance. A confirmed transfer cannot be undone.")
+     AlertDialog.Builder(a).setTitle("Send ${EvmWallet.formatNode(v)} NDX?").setMessage("To $dest\n\nA small fee is paid from your balance. A confirmed transfer cannot be undone.")
       .setNegativeButton("Cancel", null).setPositiveButton("Send") { _, _ ->
        to.setText(""); amount.setText("")
        background("Signing and sending…") {
@@ -127,10 +127,10 @@ class WalletScreen(private val a: Activity, box: LinearLayout, private val note:
 
  private fun refresh() {
   address.text = "Address: " + keys.address
-  val amount=balance?.let{ "${EvmWallet.formatNode(it)} NODE" }
-  status.text=amount?:"— NODE";homeBalance.text=status.text;assetBalance.text=balance?.let{EvmWallet.formatNode(it)}?:"—"
+  val amount=balance?.let{ "${EvmWallet.formatNode(it)} NDX" }
+  status.text=amount?:"— NDX";homeBalance.text=status.text;assetBalance.text=balance?.let{EvmWallet.formatNode(it)}?:"—"
   homeNetwork.text=chain.rpc.ifEmpty{"Not configured · open Wallet to set up"}
   val s = sent()
-  list.text = if (s.isEmpty()) "No transfers sent yet" else s.reversed().joinToString("\n") { "${it.getString("amount")} NODE to ${it.getString("to").take(10)}… · ${it.getString("state")}" }
+  list.text = if (s.isEmpty()) "No transfers sent yet" else s.reversed().joinToString("\n") { "${it.getString("amount")} NDX to ${it.getString("to").take(10)}… · ${it.getString("state")}" }
  }
 }

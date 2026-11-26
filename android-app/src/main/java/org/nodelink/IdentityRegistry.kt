@@ -14,7 +14,7 @@ import org.web3j.utils.Numeric
 
 class IdentityRegistry(private val chain:WalletChain) {
  fun read(contract:String,wallet:String):String {
-  require(EvmWallet.isAddress(contract)) { "Enter the NODELINK registry address" }
+  require(EvmWallet.isAddress(contract)) { "Enter the Nodelix Testnet registry address" }
   chain.checkChain()
   val version = Function("registryVersion", emptyList(), listOf(object:TypeReference<Uint256>(){}))
   require(readValue(contract,version)==BigInteger.ONE) { "This is not a compatible identity registry" }
@@ -36,7 +36,7 @@ class IdentityRegistry(private val chain:WalletChain) {
 
  fun submit(contract:String,key:Credentials,quote:Quote):String {
   require(read(contract,key.address).isEmpty()) { "This wallet already has a registered name" }
-  require(chain.balance(key.address)>=quote.fee) { "Not enough NODE for the registration fee" }
+  require(chain.balance(key.address)>=quote.fee) { "Not enough NDX for the registration fee" }
   val tx=RawTransaction.createTransaction(chain.nonce(key.address),quote.price,quote.gas,contract,BigInteger.ZERO,quote.data)
   return chain.send(Numeric.toHexString(TransactionEncoder.signMessage(tx,EvmWallet.CHAIN_ID,key)))
  }

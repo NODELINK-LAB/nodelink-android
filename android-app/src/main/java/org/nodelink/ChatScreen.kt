@@ -19,7 +19,7 @@ class ChatScreen(private val a:Activity,box:LinearLayout,private val peer:()->St
   box.addView(Ui.row(a,
    Ui.button(Button(a).apply{text="Send nearby";setOnClickListener{send{p,t->store.add(p,Note(UUID.randomUUID(),System.currentTimeMillis()+MessageWire.LIFE,t),"Queued");queued();"Queued. Sends automatically while linked with this phone."}}},Ui.BRAND),
    Ui.button(Button(a).apply{text="Send via mesh";setOnClickListener{send{p,t->relay.compose(p,t);"Encrypted and queued for the mesh."}}})))
-  box.addView(Ui.caption(a,"Send nearby: goes straight to the linked phone. Send via mesh: other NODELINK phones carry it locked, nobody can read it."))
+  box.addView(Ui.caption(a,"Send nearby: goes straight to the linked phone. Send via mesh: other Nodelix phones carry it locked, nobody can read it."))
   refresh()
  }
  private fun send(f:(String,String)->String){runCatching{val msg=f(pin(),text());draft.setText("");refresh();note(msg)}.onFailure{note(it.message?:"Send failed")}}

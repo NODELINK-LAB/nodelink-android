@@ -17,7 +17,7 @@ class SecurityControls(private val a:Activity,box:LinearLayout,private val pin:E
    else confirm("Block this identity?","${nl(fp)} will not be able to link, call, message or relay through this phone."){Blocklist.block(fp,"blocked by you");refresh();note("Blocked ${nl(fp)}")}}})
   box.addView(list)
   box.addView(Button(a).apply{text="Create my revocation code";setOnClickListener{val code=Blocklist.create()
-   AlertDialog.Builder(a).setTitle("Revocation code").setMessage("Keep this OFF this phone (a trusted friend, another device, paper). If this phone is lost or stolen, apply it on any NODELINK phone: every phone that syncs with it will block this identity. Anyone holding it can revoke you, but cannot impersonate you or read anything.\n\n$code")
+   AlertDialog.Builder(a).setTitle("Revocation code").setMessage("Keep this OFF this phone (a trusted friend, another device, paper). If this phone is lost or stolen, apply it on any Nodelix phone: every phone that syncs with it will block this identity. Anyone holding it can revoke you, but cannot impersonate you or read anything.\n\n$code")
     .setPositiveButton("Share"){_,_->a.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT,code),"Revocation code"))}.setNegativeButton("Close",null).show()}})
   val code=EditText(a).apply{hint="Paste a revocation code";isSingleLine=true};box.addView(code)
   box.addView(Button(a).apply{text="Apply revocation code";setOnClickListener{runCatching{Blocklist.accept(code.text.toString())}

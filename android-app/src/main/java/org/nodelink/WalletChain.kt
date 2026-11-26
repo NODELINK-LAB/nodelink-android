@@ -35,7 +35,7 @@ class WalletChain(c: Context) {
  }
  private fun big(method: String, vararg p: Any) = BigInteger((call(method, *p) as String).removePrefix("0x").ifEmpty { "0" }, 16)
 
- fun checkChain() { val id = big("eth_chainId").toLong(); require(id == 778001L) { "This RPC is chain $id, not NODELINK (778001)" } }
+ fun checkChain() { val id = big("eth_chainId").toLong(); require(id == 778001L) { "This RPC is chain $id, not Nodelix Testnet (778001)" } }
  fun balance(a: String) = big("eth_getBalance", a, "latest")
  fun nonce(a: String) = big("eth_getTransactionCount", a, "pending")
  fun gasPrice(): BigInteger = big("eth_gasPrice").max(org.nodelink.ledger.EvmWallet.MIN_GAS_PRICE)

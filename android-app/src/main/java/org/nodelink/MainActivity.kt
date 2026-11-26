@@ -47,7 +47,7 @@ class MainActivity:Activity(){
   m=getSystemService(WIFI_P2P_SERVICE) as WifiP2pManager;ch=m.initialize(this,mainLooper){session?.close();note("Radio channel lost. Restart the app.")}
   Blocklist.load(this);LanBeacon.init(this);Identity.prepare();if(Build.VERSION.SDK_INT>=33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED)requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS),3)
   val adv=LinearLayout(this).apply{orientation=1;visibility=android.view.View.GONE}
-  box.addView(Ui.steps(this,"How to get started","Install NODELINK on your friend's phone too.","In Contacts, scan each other's QR code and save it with a name.","Bring the phones close, tap \"Find nearby phones\" below and connect to your friend's phone.","Tap a contact's name to chat, 📞 to call. No internet needed."))
+  box.addView(Ui.steps(this,"How to get started","Install Nodelix on your friend's phone too.","In Contacts, scan each other's QR code and save it with a name.","Bring the phones close, tap \"Find nearby phones\" below and connect to your friend's phone.","Tap a contact's name to chat, 📞 to call. No internet needed."))
   val fp=Identity.fingerprint()
   home.addView(Ui.button(Button(this).apply{text="My Identity  ›";setOnClickListener{openIdentity()}}))
   identityPage.addView(NeonPanel.header(this,"My Identity",back={show(home)}))
@@ -101,9 +101,9 @@ class MainActivity:Activity(){
   Ui.button(btn("Hang up"){link.hangUp()},Ui.RED)
   label("On both phones, pick each other in Contacts and connect from Home. When the top shows \"Linked\", tap Call and the other phone rings.")
   call.addTo(box)
-  walletLanding.addView(Ui.title(this,"NODELINK",16f).apply{setTextColor(Ui.BRAND);letterSpacing=.12f;setPadding(Ui.dp(this@MainActivity,8),Ui.dp(this@MainActivity,13),0,0)})
+  walletLanding.addView(Ui.title(this,"Nodelix",16f).apply{setTextColor(Ui.BRAND);letterSpacing=.12f;setPadding(Ui.dp(this@MainActivity,8),Ui.dp(this@MainActivity,13),0,0)})
   walletLanding.addView(NeonArt(this,"wallet"),Ui.lp(-1,Ui.dp(this,240)))
-  walletLanding.addView(Ui.title(this,"Your Digital Wallet",22f).apply{gravity=android.view.Gravity.CENTER});walletLanding.addView(Ui.caption(this,"Send and receive NODE on nodelink-1").apply{gravity=android.view.Gravity.CENTER;setPadding(0,Ui.dp(this@MainActivity,4),0,Ui.dp(this@MainActivity,12))})
+  walletLanding.addView(Ui.title(this,"Your Digital Wallet",22f).apply{gravity=android.view.Gravity.CENTER});walletLanding.addView(Ui.caption(this,"Send and receive NDX on Nodelix Testnet").apply{gravity=android.view.Gravity.CENTER;setPadding(0,Ui.dp(this@MainActivity,4),0,Ui.dp(this@MainActivity,12))})
   walletLanding.addView(Ui.button(Button(this).apply{text="Manage Wallet";setOnClickListener{openWallet()}},Ui.BRAND))
   val wallet=WalletScreen(this,walletPage,::note){show(walletLanding)}
   wallet.addOnChainIdentity(identityPage)

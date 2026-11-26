@@ -18,7 +18,7 @@ object VoiceCall {
  private fun encFormat(bps:Int)=MediaFormat.createAudioFormat(MediaFormat.MIMETYPE_AUDIO_OPUS,RATE,1).apply{setInteger(MediaFormat.KEY_BIT_RATE,bps)}
  fun run(i:DataInputStream,o:DataOutputStream){
   require(supported()){"This phone has no Opus codec"}
-  o.writeInt(MAGIC);o.flush();require(i.readInt()==MAGIC){"The other phone runs a different NODELINK version"}
+  o.writeInt(MAGIC);o.flush();require(i.readInt()==MAGIC){"The other phone runs a different Nodelix version"}
   CallQuality.reset()
   val mic=AudioRecord(MediaRecorder.AudioSource.VOICE_COMMUNICATION,RATE,AudioFormat.CHANNEL_IN_MONO,AudioFormat.ENCODING_PCM_16BIT,maxOf(FRAME*4,AudioRecord.getMinBufferSize(RATE,AudioFormat.CHANNEL_IN_MONO,AudioFormat.ENCODING_PCM_16BIT)))
   val fx=listOfNotNull<android.media.audiofx.AudioEffect>(if(android.media.audiofx.AcousticEchoCanceler.isAvailable())android.media.audiofx.AcousticEchoCanceler.create(mic.audioSessionId) else null,if(android.media.audiofx.NoiseSuppressor.isAvailable())android.media.audiofx.NoiseSuppressor.create(mic.audioSessionId) else null).onEach{runCatching{it.enabled=true}}

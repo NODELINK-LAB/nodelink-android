@@ -21,7 +21,7 @@ class RelayService:Service(){
  private fun show(s:String){getSystemService(NotificationManager::class.java).notify(7,card.setContentText(s).build())}
  override fun onCreate(){super.onCreate();Blocklist.load(this)
   getSystemService(NotificationManager::class.java).createNotificationChannel(NotificationChannel("relay","Mesh relay",NotificationManager.IMPORTANCE_LOW))
-  card=Notification.Builder(this,"relay").setSmallIcon(android.R.drawable.stat_sys_data_bluetooth).setContentTitle("NODELINK relay on").setOngoing(true)
+  card=Notification.Builder(this,"relay").setSmallIcon(android.R.drawable.stat_sys_data_bluetooth).setContentTitle("Nodelix relay on").setOngoing(true)
    .setContentText("Passing encrypted messages to nearby phones").setContentIntent(PendingIntent.getActivity(this,0,Intent(this,MainActivity::class.java),PendingIntent.FLAG_IMMUTABLE))
   startForeground(7,card.build(),if(Build.VERSION.SDK_INT>=33)ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE else ServiceInfo.FOREGROUND_SERVICE_TYPE_CONNECTED_DEVICE or ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)
   wake=getSystemService(PowerManager::class.java).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,"nodelink:relay").apply{acquire()}
