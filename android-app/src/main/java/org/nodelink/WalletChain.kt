@@ -39,6 +39,8 @@ class WalletChain(c: Context) {
  fun balance(a: String) = big("eth_getBalance", a, "latest")
  fun nonce(a: String) = big("eth_getTransactionCount", a, "pending")
  fun gasPrice(): BigInteger = big("eth_gasPrice").max(org.nodelink.ledger.EvmWallet.MIN_GAS_PRICE)
+ fun contractRead(to:String,data:String) = call("eth_call",JSONObject().put("to",to).put("data",data),"latest") as String
+ fun contractGas(from:String,to:String,data:String) = big("eth_estimateGas",JSONObject().put("from",from).put("to",to).put("data",data))
  fun send(raw: String) = call("eth_sendRawTransaction", raw) as String
  // null while not yet in a block, true if it succeeded, false if it reverted.
  fun receipt(hash: String): Boolean? = (call("eth_getTransactionReceipt", hash) as? JSONObject)?.let { it.getString("status") == "0x1" }

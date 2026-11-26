@@ -20,6 +20,7 @@ class WalletScreen(private val a: Activity, box: LinearLayout, private val note:
  private val settings=Ui.card(a).apply{visibility=android.view.View.GONE}
  private fun seed() = vault.get("seed")?.let { Codec.unhex(it) } ?: ByteArray(32).also { SecureRandom().nextBytes(it); vault.put("seed", Codec.hex(it)) }
  private var keys = EvmWallet.fromSeed(seed())
+ fun addOnChainIdentity(box:LinearLayout) = OnChainIdentityControls(a,box,chain){keys}
  private var balance: BigInteger? = null
  private fun sent() = JSONArray(vault.get("evm_sent") ?: "[]").let { p -> (0 until p.length()).map { p.getJSONObject(it) } }
  private fun saveSent(l: List<JSONObject>) = vault.put("evm_sent", JSONArray(l.takeLast(20)).toString())

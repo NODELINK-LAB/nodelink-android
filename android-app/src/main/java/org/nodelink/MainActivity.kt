@@ -106,6 +106,7 @@ class MainActivity:Activity(){
   walletLanding.addView(Ui.title(this,"Your Digital Wallet",22f).apply{gravity=android.view.Gravity.CENTER});walletLanding.addView(Ui.caption(this,"Send and receive NODE on nodelink-1").apply{gravity=android.view.Gravity.CENTER;setPadding(0,Ui.dp(this@MainActivity,4),0,Ui.dp(this@MainActivity,12))})
   walletLanding.addView(Ui.button(Button(this).apply{text="Manage Wallet";setOnClickListener{openWallet()}},Ui.BRAND))
   val wallet=WalletScreen(this,walletPage,::note){show(walletLanding)}
+  wallet.addOnChainIdentity(identityPage)
   wallet.addHomeSummary(home,1,::openWallet)
   box=home;box.addView(Ui.section(this,"On the same Wi-Fi or hotspot"));btn("📶  Link over Wi-Fi / hotspot"){val d=pin.text.toString().trim().lowercase();when{!LanBeacon.available()->note("Join the same Wi-Fi or phone hotspot as the contact first")
    auto.on->note("Turn off Auto relay first");!d.matches(Regex("[0-9a-f]{64}"))->note("Pick a contact first");else->{link.startLan(d);note("Looking for the contact on this Wi-Fi…")}}}
