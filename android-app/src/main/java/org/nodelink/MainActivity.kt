@@ -15,14 +15,14 @@ class MainActivity:Activity(){
  private lateinit var qr:QrControls;private lateinit var auto:AutoSync
  private lateinit var web:WebScreen;private var session:Session?=null;private var registered=false;private lateinit var link:Link
  private val perm get()=if(Build.VERSION.SDK_INT>=33) Manifest.permission.NEARBY_WIFI_DEVICES else Manifest.permission.ACCESS_FINE_LOCATION
- private fun note(s:String){status.text=s}
+ private fun note(s:String){status.text="●  $s"}
  private fun action(ok:String)=object:WifiP2pManager.ActionListener{override fun onSuccess(){note(ok)};override fun onFailure(n:Int){note("Wi-Fi Direct request failed: $n")}}
  private val rx=object:BroadcastReceiver(){override fun onReceive(c:Context,i:Intent){if(checkSelfPermission(perm)!=PackageManager.PERMISSION_GRANTED)return
   if(i.action==WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION)m.requestPeers(ch){list->peers.removeAllViews();if(::auto.isInitialized)auto.peers(list.deviceList);list.deviceList.forEach{d->peers.addView(Button(this@MainActivity).apply{text="📱  যুক্ত হন: ${d.deviceName}";setOnClickListener{m.connect(ch,WifiP2pConfig().apply{deviceAddress=d.deviceAddress},action("Connection requested; accept on peer"))}})}}
   if(i.action==WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)m.requestConnectionInfo(ch){if(it==null||!it.groupFormed){if(!(::link.isInitialized && link.lan)){if(::link.isInitialized)link.stop();session?.close()};note("No group formed")}else{note(if(it.isGroupOwner)"Group owner: start probe here first" else "Group client: start after owner is listening");if(::auto.isInitialized)auto.connected(it)
    val p=pin.text.toString().trim().lowercase();if(::link.isInitialized && ::auto.isInitialized && !auto.on && p.matches(Regex("[0-9a-f]{64}")))link.start(it,p)}}
  }}
- override fun onCreate(state:Bundle?){super.onCreate(state);window.statusBarColor=Ui.SURFACE;window.navigationBarColor=Ui.SURFACE
+ override fun onCreate(state:Bundle?){super.onCreate(state);window.statusBarColor=0xFF102A22.toInt();window.navigationBarColor=Ui.BG
   val root=LinearLayout(this).apply{orientation=1;setPadding(Ui.dp(this@MainActivity,16),Ui.dp(this@MainActivity,8),Ui.dp(this@MainActivity,16),Ui.dp(this@MainActivity,24))}
   val scroll=ScrollView(this).apply{setBackgroundColor(Ui.BG);addView(root)}
   fun page(show:Boolean)=LinearLayout(this).apply{orientation=1;visibility=if(show)android.view.View.VISIBLE else android.view.View.GONE}

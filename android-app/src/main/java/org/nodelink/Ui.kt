@@ -10,9 +10,9 @@ import android.widget.*
 // section headers and contact avatars. style() themes every control in a view tree that is not styled yet, so all
 // screens built in code look the same. Pure UI: nothing here changes behaviour.
 object Ui{
- const val BG=0xFF0B1220.toInt();const val SURFACE=0xFF141D2F.toInt();const val RAISED=0xFF1E293B.toInt();const val LINE=0xFF2A3650.toInt()
- const val TEXT=0xFFF1F5F9.toInt();const val SOFT=0xFFCBD5E1.toInt();const val MUTED=0xFF94A3B8.toInt()
- const val BRAND=0xFFC1F683.toInt();const val INK=0xFF0B1220.toInt();const val GREEN=0xFF22C55E.toInt();const val RED=0xFFEF4444.toInt()
+ const val BG=0xFF06110E.toInt();const val SURFACE=0xFF0D1C18.toInt();const val RAISED=0xFF16302A.toInt();const val LINE=0xFF21443B.toInt()
+ const val TEXT=0xFFF2FBF6.toInt();const val SOFT=0xFFC9DDD4.toInt();const val MUTED=0xFF8AA79B.toInt()
+ const val BRAND=0xFFC1F683.toInt();const val AMBER=0xFFFFC857.toInt();const val INK=0xFF06110E.toInt();const val GREEN=0xFF2BD47D.toInt();const val RED=0xFFFF5A5F.toInt()
  const val DONE="ui"
  private val tints=intArrayOf(0xFF6366F1.toInt(),0xFF0EA5E9.toInt(),0xFF14B8A6.toInt(),0xFFF59E0B.toInt(),0xFFEC4899.toInt(),0xFF8B5CF6.toInt())
  fun dp(c:Context,v:Int)=(v*c.resources.displayMetrics.density).toInt()
@@ -23,23 +23,26 @@ object Ui{
 
  // Filled button. fill gives the role: BRAND primary, GREEN call/answer, RED hang up/decline, RAISED neutral.
  fun button(b:Button,fill:Int=RAISED,ink:Int=if(fill==RAISED)TEXT else INK):Button{val c=b.context;b.tag=DONE
-  b.isAllCaps=false;b.setTextColor(ink);b.textSize=15f;b.typeface=Typeface.DEFAULT_BOLD;b.background=round(c,fill,14);b.stateListAnimator=null
-  b.minHeight=dp(c,48);b.minimumHeight=dp(c,48);b.setPadding(dp(c,16),dp(c,8),dp(c,16),dp(c,8))
+  b.isAllCaps=false;b.setTextColor(ink);b.textSize=15f;b.typeface=Typeface.DEFAULT_BOLD;b.background=if(fill==RAISED)round(c,RAISED,26,LINE) else round(c,fill,26);b.stateListAnimator=null
+  b.minHeight=dp(c,52);b.minimumHeight=dp(c,52);b.setPadding(dp(c,18),dp(c,8),dp(c,18),dp(c,8))
   val row=(b.parent as? LinearLayout)?.orientation==LinearLayout.HORIZONTAL;val side=dp(c,if(row)4 else 0)
   b.layoutParams=(if(row)lp(0,-2,1f) else lp()).apply{setMargins(side,dp(c,5),side,dp(c,5))};return b}
  fun row(c:Context,vararg v:View)=LinearLayout(c).apply{v.forEach{addView(it,lp(0,-2,1f).apply{setMargins(dp(c,4),dp(c,5),dp(c,4),dp(c,5))})}}
  fun title(c:Context,s:String,size:Float=18f)=TextView(c).apply{tag=DONE;text=s;setTextColor(TEXT);textSize=size;typeface=Typeface.DEFAULT_BOLD}
  fun caption(c:Context,s:String)=TextView(c).apply{tag=DONE;text=s;setTextColor(MUTED);textSize=13f;setLineSpacing(0f,1.2f)}
- fun card(c:Context)=LinearLayout(c).apply{orientation=1;background=round(c,SURFACE,18);setPadding(dp(c,14),dp(c,12),dp(c,14),dp(c,12));layoutParams=lp().apply{setMargins(0,dp(c,5),0,dp(c,5))}}
+ fun card(c:Context)=LinearLayout(c).apply{orientation=1;background=GradientDrawable(GradientDrawable.Orientation.TL_BR,intArrayOf(0xFF122822.toInt(),SURFACE)).apply{cornerRadius=dp(c,24).toFloat();setStroke(dp(c,1),LINE)}
+  setPadding(dp(c,16),dp(c,14),dp(c,16),dp(c,14));layoutParams=lp().apply{setMargins(0,dp(c,6),0,dp(c,6))}}
  fun paint(v:TextView,name:String){v.text=name.trim().split(Regex("\\s+")).filter{it.isNotEmpty()}.take(2).joinToString(""){it.take(1).uppercase()}.ifEmpty{"?"}
   v.background=oval(tints[Math.floorMod(name.hashCode(),tints.size)])}
  fun avatar(c:Context,name:String,size:Int)=TextView(c).apply{tag=DONE;gravity=Gravity.CENTER;setTextColor(-1);typeface=Typeface.DEFAULT_BOLD;textSize=size/2.6f;layoutParams=lp(dp(c,size),dp(c,size));paint(this,name)}
- fun topBar(c:Context,status:TextView)=LinearLayout(c).apply{orientation=1;setBackgroundColor(SURFACE);setPadding(dp(c,20),dp(c,14),dp(c,20),dp(c,12))
-  addView(title(c,"NODELINK",20f).apply{letterSpacing=.12f;setTextColor(BRAND)})
-  status.tag=DONE;status.setTextColor(SOFT);status.textSize=13f;addView(status)}
+ // Top bar: brand word and the live status as a pill with a lime dot.
+ fun topBar(c:Context,status:TextView)=LinearLayout(c).apply{orientation=1;background=GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,intArrayOf(0xFF102A22.toInt(),BG));setPadding(dp(c,20),dp(c,14),dp(c,20),dp(c,10))
+  addView(title(c,"NODELINK",22f).apply{letterSpacing=.18f;setTextColor(BRAND);typeface=Typeface.create(Typeface.DEFAULT,Typeface.BOLD)})
+  status.tag=DONE;status.setTextColor(SOFT);status.textSize=13f;status.text="●  "+status.text;status.background=round(c,RAISED,20,LINE);status.setPadding(dp(c,12),dp(c,6),dp(c,12),dp(c,6))
+  addView(status,lp(-2,-2).apply{topMargin=dp(c,8)})}
 
  // Section header for any language (Bengali has no capitals, so header() cannot detect it).
- fun section(c:Context,s:String)=TextView(c).apply{tag=DONE;text=s;setTextColor(BRAND);textSize=13f;typeface=Typeface.DEFAULT_BOLD;setPadding(0,dp(c,22),0,dp(c,6))}
+ fun section(c:Context,s:String)=TextView(c).apply{tag=DONE;text="▍"+s;setTextColor(BRAND);textSize=14f;typeface=Typeface.DEFAULT_BOLD;setPadding(0,dp(c,24),0,dp(c,8))}
  // Numbered help card: a title and short steps, shown at the top of a screen.
  fun steps(c:Context,t:String,vararg s:String)=card(c).apply{addView(title(c,t,16f));s.forEachIndexed{i,x->addView(caption(c,"${i+1}.  $x").apply{setTextColor(SOFT);textSize=14f;setPadding(0,dp(c,6),0,0)})}}
  // A label whose first word is in capitals ("MESH RELAY · …") becomes a section header.
@@ -48,7 +51,7 @@ object Ui{
   when(v){
    is CompoundButton->{v.setTextColor(TEXT);v.textSize=15f;v.setPadding(0,dp(c,12),0,dp(c,12));v.tag=DONE}
    is Button->button(v)
-   is EditText->{v.setTextColor(TEXT);v.setHintTextColor(MUTED);v.textSize=15f;v.background=round(c,SURFACE,12,LINE);v.setPadding(dp(c,14),dp(c,12),dp(c,14),dp(c,12))
+   is EditText->{v.setTextColor(TEXT);v.setHintTextColor(MUTED);v.textSize=15f;v.background=round(c,SURFACE,18,LINE);v.setPadding(dp(c,16),dp(c,14),dp(c,16),dp(c,14))
     (v.layoutParams as? LinearLayout.LayoutParams)?.let{it.setMargins(0,dp(c,6),0,dp(c,6));v.layoutParams=it};v.tag=DONE}
    is TextView->{if(header(v.text.toString())){v.setTextColor(BRAND);v.textSize=12f;v.typeface=Typeface.DEFAULT_BOLD;v.letterSpacing=.08f;v.setPadding(0,dp(c,22),0,dp(c,6))}
     else{v.setTextColor(SOFT);v.textSize=14f;v.setLineSpacing(0f,1.2f);v.setPadding(0,dp(c,3),0,dp(c,3))};v.tag=DONE}
