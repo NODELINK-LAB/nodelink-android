@@ -25,6 +25,10 @@ class NeonIcon(c:Context,private val kind:String):View(c){
    "receive"->{lines(12f,3f,12f,15f);lines(7f,10f,12f,15f,17f,10f);lines(4f,16f,4f,21f,20f,21f,20f,16f)}
    "refresh"->{canvas.drawArc(4f,4f,20f,20f,25f,305f,false,p);lines(20f,5f,20f,11f,14f,11f)}
    "more"->{ring(5f,12f,1f);ring(12f,12f,1f);ring(19f,12f,1f)}
+   "back"->lines(15f,5f,8f,12f,15f,19f)
+   "next"->lines(9f,5f,16f,12f,9f,19f)
+   "plus"->{lines(12f,4f,12f,20f);lines(4f,12f,20f,12f)}
+   "shield"->{val shield=Path().apply{moveTo(12f,3f);lineTo(21f,6f);lineTo(20f,13f);quadTo(19f,18f,12f,22f);quadTo(5f,18f,4f,13f);lineTo(3f,6f);close()};canvas.drawPath(shield,p);lines(8f,12f,11f,15f,16f,9f)}
   };canvas.restore()
  }
 }

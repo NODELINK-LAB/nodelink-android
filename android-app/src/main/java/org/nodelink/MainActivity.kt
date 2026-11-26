@@ -32,7 +32,7 @@ class MainActivity:Activity(){
   status=TextView(this).apply{text="●  Not connected to any phone"}
   val liveNote=Ui.caption(this,"Not connected to any phone").apply{visibility=android.view.View.GONE;gravity=android.view.Gravity.CENTER;setPadding(Ui.dp(this@MainActivity,12),Ui.dp(this@MainActivity,3),Ui.dp(this@MainActivity,12),Ui.dp(this@MainActivity,3))};compactStatus=liveNote
   val tabs=listOf(home,chatPage,callPage,contactsPage,walletLanding);val pages=tabs+listOf(walletPage,identityPage);pages.forEach{root.addView(it)};box=home
-  home.addView(Ui.topBar(this,status));chatPage.addView(Ui.heading(this,"Chats"));callPage.addView(Ui.heading(this,"Calls"));contactsPage.addView(Ui.heading(this,"Contacts"))
+  home.addView(Ui.topBar(this,status));chatPage.addView(NeonPanel.header(this,"Chats"));callPage.addView(NeonPanel.header(this,"Calls"))
   lateinit var nav:NavBar;web=WebScreen(this)
   fun showWeb(){backFromDetail=null;liveNote.visibility=android.view.View.GONE;scroll.visibility=android.view.View.GONE;web.view.visibility=android.view.View.VISIBLE;nav.select(5);web.open()}
   fun show(p:LinearLayout){scroll.visibility=android.view.View.VISIBLE;web.view.visibility=android.view.View.GONE;liveNote.visibility=if(p===home||p===identityPage)android.view.View.GONE else android.view.View.VISIBLE;pages.forEach{it.visibility=if(it===p)android.view.View.VISIBLE else android.view.View.GONE};nav.select(if(p===identityPage)0 else if(p===walletPage)4 else tabs.indexOf(p));scroll.scrollTo(0,0);backFromDetail=null;if(p===chatPage)onChat();if(p===callPage)onCall()}
@@ -50,16 +50,18 @@ class MainActivity:Activity(){
   box.addView(Ui.steps(this,"How to get started","Install NODELINK on your friend's phone too.","In Contacts, scan each other's QR code and save it with a name.","Bring the phones close, tap \"Find nearby phones\" below and connect to your friend's phone.","Tap a contact's name to chat, 📞 to call. No internet needed."))
   val fp=Identity.fingerprint()
   home.addView(Ui.button(Button(this).apply{text="My Identity  ›";setOnClickListener{openIdentity()}}))
-  identityPage.addView(Ui.row(this,Ui.button(Button(this).apply{text="‹  Back";setOnClickListener{show(home)}}),Ui.heading(this,"My Identity")))
+  identityPage.addView(NeonPanel.header(this,"My Identity",back={show(home)}))
   identityPage.addView(NeonArt(this,"identity"),Ui.lp(-1,Ui.dp(this,120)))
   identityPage.gravity=android.view.Gravity.CENTER_HORIZONTAL
   identityPage.addView(Ui.title(this,"My ID: ${Ui.nl(fp)}",19f).apply{gravity=android.view.Gravity.CENTER})
   qr=QrControls(this,identityPage,fp,::note)
   identityPage.addView(Ui.caption(this,"Full fingerprint:\n$fp").apply{setTextIsSelectable(true);gravity=android.view.Gravity.CENTER;textSize=12f})
   identityPage.addView(Ui.caption(this,"Show this QR only to people you trust.").apply{gravity=android.view.Gravity.CENTER})
-  val contactSearch=EditText(this).apply{hint="Search friends…";isSingleLine=true};contactsPage.addView(contactSearch)
   val contactForm=Ui.card(this).apply{visibility=android.view.View.GONE}
-  contactsPage.addView(Ui.button(Button(this).apply{text="＋  New contact  ›";setOnClickListener{contactForm.visibility=if(contactForm.visibility==android.view.View.VISIBLE)android.view.View.GONE else android.view.View.VISIBLE}}))
+  fun toggleContact(){contactForm.visibility=if(contactForm.visibility==android.view.View.VISIBLE)android.view.View.GONE else android.view.View.VISIBLE}
+  contactsPage.addView(NeonPanel.header(this,"Contacts",icon="plus",action=::toggleContact))
+  val contactSearch=EditText(this).apply{hint="Search friends…";isSingleLine=true};contactsPage.addView(contactSearch)
+  contactsPage.addView(NeonPanel.row(this,"contacts","New contact",Ui.caption(this,"Scan QR or enter name"),::toggleContact))
   contactsPage.addView(contactForm);box=contactForm;label("Scan your friend's QR code, then save it with a name.")
   pin=EditText(this).apply{hint="Friend's fingerprint (filled in by scanning)";isSingleLine=true};box.addView(pin);qr.scanButton(box,"Scan friend's QR",0x4e1,pin)
   box=home;box.addView(Ui.section(this,"Nearby phones · no internet"))
@@ -99,11 +101,11 @@ class MainActivity:Activity(){
   Ui.button(btn("Hang up"){link.hangUp()},Ui.RED)
   label("On both phones, pick each other in Contacts and connect from Home. When the top shows \"Linked\", tap Call and the other phone rings.")
   call.addTo(box)
-  walletLanding.addView(Ui.heading(this,"NODELINK"));walletLanding.addView(NeonArt(this,"wallet"),Ui.lp(-1,Ui.dp(this,216)))
-  walletLanding.addView(Ui.heading(this,"Your Digital Wallet"));walletLanding.addView(Ui.caption(this,"Send and receive NODE on nodelink-1").apply{gravity=android.view.Gravity.CENTER})
+  walletLanding.addView(Ui.title(this,"NODELINK",16f).apply{setTextColor(Ui.BRAND);letterSpacing=.12f;setPadding(Ui.dp(this@MainActivity,8),Ui.dp(this@MainActivity,13),0,0)})
+  walletLanding.addView(NeonArt(this,"wallet"),Ui.lp(-1,Ui.dp(this,240)))
+  walletLanding.addView(Ui.title(this,"Your Digital Wallet",22f).apply{gravity=android.view.Gravity.CENTER});walletLanding.addView(Ui.caption(this,"Send and receive NODE on nodelink-1").apply{gravity=android.view.Gravity.CENTER;setPadding(0,Ui.dp(this@MainActivity,4),0,Ui.dp(this@MainActivity,12))})
   walletLanding.addView(Ui.button(Button(this).apply{text="Manage Wallet";setOnClickListener{openWallet()}},Ui.BRAND))
-  walletPage.addView(Ui.row(this,Ui.button(Button(this).apply{text="‹  Back";setOnClickListener{show(walletLanding)}}),Ui.heading(this,"Wallet")))
-  val wallet=WalletScreen(this,walletPage,::note)
+  val wallet=WalletScreen(this,walletPage,::note){show(walletLanding)}
   wallet.addHomeSummary(home,1,::openWallet)
   box=home;box.addView(Ui.section(this,"On the same Wi-Fi or hotspot"));btn("📶  Link over Wi-Fi / hotspot"){val d=pin.text.toString().trim().lowercase();when{!LanBeacon.available()->note("Join the same Wi-Fi or phone hotspot as the contact first")
    auto.on->note("Turn off Auto relay first");!d.matches(Regex("[0-9a-f]{64}"))->note("Pick a contact first");else->{link.startLan(d);note("Looking for the contact on this Wi-Fi…")}}}

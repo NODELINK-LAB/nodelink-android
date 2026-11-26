@@ -16,7 +16,9 @@ class CallControls(private val a:Activity){
  private val clock=Ui.caption(a,"").apply{gravity=Gravity.CENTER};private val incoming=Ui.title(a,"",16f).apply{gravity=Gravity.CENTER;setTextColor(Ui.BRAND);setPadding(0,Ui.dp(a,12),0,Ui.dp(a,4))}
  private val log=LinearLayout(a).apply{orientation=1}
  private fun refreshHistory(){log.removeAllViews();val history=CallQuality.history(a);if(history.isEmpty())log.addView(Ui.caption(a,"No measured calls yet"))
-  history.forEach{entry->log.addView(Ui.card(a).apply{addView(Ui.title(a,entry.substringBefore(" · "),15f));addView(Ui.caption(a,entry.substringAfter(" · ")).apply{setTextIsSelectable(true)})})}}
+  history.forEach{entry->log.addView(LinearLayout(a).apply{gravity=Gravity.CENTER_VERTICAL;setPadding(Ui.dp(a,5),Ui.dp(a,7),Ui.dp(a,5),Ui.dp(a,7))
+   addView(FrameLayout(a).apply{background=Ui.oval(Ui.RAISED);addView(NeonIcon(a,"call"),FrameLayout.LayoutParams(Ui.dp(a,21),Ui.dp(a,21),Gravity.CENTER))},Ui.lp(Ui.dp(a,42),Ui.dp(a,42)))
+   addView(LinearLayout(a).apply{orientation=1;setPadding(Ui.dp(a,12),0,0,0);addView(Ui.title(a,entry.substringBefore(" · "),15f));addView(Ui.caption(a,entry.substringAfter(" · ")).apply{setTextIsSelectable(true)})},Ui.lp(0,-2,1f))});log.addView(View(a).apply{setBackgroundColor(Ui.LINE)},Ui.lp(-1,Ui.dp(a,1)))}}
  private val answer=Ui.button(Button(a).apply{text="Accept"},Ui.GREEN);private val reject=Ui.button(Button(a).apply{text="Decline"},Ui.RED)
  private val ringRow=LinearLayout(a).apply{orientation=1;visibility=View.GONE;addView(incoming,Ui.lp());addView(Ui.row(a,answer,reject))}
  private val mute=Button(a).apply{setOnClickListener{VoiceCall.muted=!VoiceCall.muted;show()}}
