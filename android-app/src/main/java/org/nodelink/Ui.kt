@@ -38,6 +38,10 @@ object Ui{
   addView(title(c,"NODELINK",20f).apply{letterSpacing=.12f;setTextColor(BRAND)})
   status.tag=DONE;status.setTextColor(SOFT);status.textSize=13f;addView(status)}
 
+ // Section header for any language (Bengali has no capitals, so header() cannot detect it).
+ fun section(c:Context,s:String)=TextView(c).apply{tag=DONE;text=s;setTextColor(BRAND);textSize=13f;typeface=Typeface.DEFAULT_BOLD;setPadding(0,dp(c,22),0,dp(c,6))}
+ // Numbered help card: a title and short steps, shown at the top of a screen.
+ fun steps(c:Context,t:String,vararg s:String)=card(c).apply{addView(title(c,t,16f));s.forEachIndexed{i,x->addView(caption(c,"${i+1}.  $x").apply{setTextColor(SOFT);textSize=14f;setPadding(0,dp(c,6),0,0)})}}
  // A label whose first word is in capitals ("MESH RELAY · …") becomes a section header.
  private fun header(t:String)=t.substringBefore(" ·").substringBefore("\n").let{w->w.length in 4..30 && w.any{it.isLetter()} && w.all{it.isUpperCase()||it==' '||it=='-'||it=='&'}}
  fun style(v:View){if(v.tag==DONE)return;val c=v.context

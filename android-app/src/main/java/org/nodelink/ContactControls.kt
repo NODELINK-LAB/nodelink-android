@@ -11,14 +11,14 @@ class ContactControls(private val a:Activity,box:LinearLayout,private val peer:E
  private val vault=Vault(a,"contacts");private val list=LinearLayout(a).apply{orientation=1}
  private fun all()=JSONObject(vault.get("book")?:"{}")
  init{
-  val name=EditText(a).apply{hint="Contact name";isSingleLine=true};box.addView(name)
-  box.addView(Ui.button(Button(a).apply{text="Save contact";setOnClickListener{
+  val name=EditText(a).apply{hint="বন্ধুর নাম";isSingleLine=true};box.addView(name)
+  box.addView(Ui.button(Button(a).apply{text="✓  কন্টাক্ট সেভ করুন";setOnClickListener{
    val n=name.text.toString().trim();val fp=peer.text.toString().trim().lowercase()
    when{n.isEmpty()||n.length>40->note("Enter a name up to 40 characters")
     !fp.matches(Regex("[a-f0-9]{64}"))->note("Scan or enter the full 64-digit fingerprint first")
     fp==Identity.fingerprint()->note("That is this phone's own fingerprint")
     else->{vault.put("book",all().put(n,fp).toString());name.setText("");refresh();note("Saved $n. Verify the fingerprint in person.")}}}},Ui.BRAND))
-  box.addView(TextView(a).apply{text="MY CONTACTS · stored encrypted on this phone"});box.addView(list);refresh()
+  box.addView(Ui.section(a,"আমার কন্টাক্ট · নাম চাপলে চ্যাট, 📞 চাপলে কল"));box.addView(list);refresh()
  }
  private fun select(n:String,fp:String,where:String){peer.setText(fp);dest.setText(fp);note("Selected $n for chat, call and mesh");open(where)}
  fun refresh(){list.removeAllViews();val b=all();b.keys().asSequence().sorted().forEach{n->val fp=b.getString(n)
@@ -29,6 +29,6 @@ class ContactControls(private val a:Activity,box:LinearLayout,private val peer:E
    addView(Ui.avatar(a,n,44));addView(info,Ui.lp(0,-2,1f));addView(call)
    setOnClickListener{select(n,fp,"chat")}
    setOnLongClickListener{vault.put("book",all().apply{remove(n)}.toString());refresh();note("Deleted $n");true}})}
-  if(b.length()==0)list.addView(Ui.caption(a,"No contacts yet. Scan a friend's QR above to add one."))}
+  if(b.length()==0)list.addView(Ui.caption(a,"এখনো কোনো কন্টাক্ট নেই। উপরে বন্ধুর QR স্ক্যান করে যোগ করুন।"))}
  companion object{fun name(a:Activity,fp:String):String?{val b=JSONObject(Vault(a,"contacts").get("book")?:"{}");return b.keys().asSequence().firstOrNull{b.getString(it)==fp}}}
 }
