@@ -1,0 +1,17 @@
+# HTTPS for the public NODELINK RPC. Caddy gets and renews the Let's Encrypt certificate automatically.
+{$RPC_DOMAIN} {
+	request_body {
+		max_size 64KB
+	}
+	header {
+		Access-Control-Allow-Origin "*"
+		Access-Control-Allow-Methods "POST, OPTIONS"
+		Access-Control-Allow-Headers "content-type"
+		-Server
+	}
+	@preflight method OPTIONS
+	respond @preflight 204
+	@rpc method POST
+	reverse_proxy @rpc node:8545
+	respond "NODELINK RPC (chain 778001). Send JSON-RPC with POST." 200
+}

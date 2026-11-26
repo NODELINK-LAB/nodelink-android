@@ -1,0 +1,10 @@
+# Mesh relay, step 1: encrypted store-and-forward
+Each phone has a relay key card signed by its Keystore identity. Cards are exchanged and gossiped on every mesh sync; a forged card fails the signature check. A message is sealed to the recipient's card (ephemeral ECDH P-256, AES-GCM) and signed by the sender inside the ciphertext. Relays see only envelope id, recipient fingerprint, expiry and size. They cannot read, alter or forge it.
+
+Routing is pass-on with no hop limit: each sync offers up to 64 envelope ids, the peer takes unknown ones and ACKs after encrypted storage. A phone holds an envelope only until one neighbor ACKs it, then deletes it and remembers the id so it never carries it again; this also prevents loops. Holding until the next contact is unavoidable because phones are not connected at the same time. Only one copy travels at a time. Lifetime 7 days, queue 512.
+
+## Delivery receipts and retry
+The sender's signed card travels inside the ciphertext, so the recipient can always return an encrypted, signed receipt over the mesh. The sender then shows Delivered via mesh. Without a receipt, every sync after 6 hours (or Retry undelivered now) re-seals the same message under a new envelope id, because relays refuse ids they already carried. The recipient de-duplicates by message id and receipts again. Receipts are not retried; a lost receipt causes a harmless retry. No end-to-end delivery receipt yet. Sync is manual and foreground, between two directly connected phones; one phone links with a single neighbor at a time.
+
+## Three-phone acceptance (A, B, C)
+A and C must have the other's full fingerprint, verified in person. Sync A with B, then B with C, so cards spread. Disconnect. On A, enter C's fingerprint and send via mesh. Sync A with B. Disconnect, then sync B with C. C must show Received via mesh from A. Sync C with B, then B with A: A must show Delivered via mesh. B's message view must not show the text. Repeat a sync: C must not show a duplicate. A phone with a different key must reject it. No physical results recorded.

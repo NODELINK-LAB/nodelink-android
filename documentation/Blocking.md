@@ -1,0 +1,9 @@
+# Blocking and revoking identities
+Block: select a contact (or enter a fingerprint) and tap Block on Home. The check runs inside every TLS handshake, so a blocked identity cannot open a direct link, a relayed link, a mesh or auto-relay sync, or use this phone as a relay; messages from it that arrive through the mesh are dropped (still acknowledged, so relays stop carrying them); nothing can be sent to it. The list stays on this phone and is never shared. Hold an entry to unblock.
+
+Revocation code: Create my revocation code shows a code signed by this phone's identity key (nodelink-revoke:v1:<public key>:<signature>). Keep it off the phone (paper, a trusted friend). Only the key owner can create one; anyone holding it can revoke the identity but cannot impersonate it or read anything. Apply revocation code on any NODELINK phone verifies the signature and blocks that identity. Valid codes are exchanged in every mesh sync (up to 64 per sync), so the notice spreads through the network the same way messages do. Revoke this phone's identity now does the same with the current key, destroys it, creates a new identity and closes the app; every contact must verify the new fingerprint in person.
+
+Limits: an identity whose phone is lost can only be revoked with a code created beforehand; otherwise each person must block it by hand. Revocations reach only phones connected through mesh syncs. There is no un-revoke. Mesh sync now includes revocations, so all phones need this version. No physical results recorded.
+
+## Acceptance
+A blocks B: B's Call, chat and mesh sync to A must fail; A's chat to B must refuse. B creates a code, A applies it: B shows BLOCKED on A. C syncs with A: B must now be blocked on C too. B revokes itself: the app closes, opens with a new fingerprint, and the old one is blocked on phones that sync.

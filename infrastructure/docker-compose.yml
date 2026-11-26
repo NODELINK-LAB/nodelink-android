@@ -1,0 +1,26 @@
+# NODELINK public RPC node + HTTPS (phase 9). A full node, NOT a validator: it holds no validator key.
+# On the server: cp infrastructure/.env.example infrastructure/.env, edit it, then bash scripts/rpc-node.sh up
+services:
+  node:
+    build: { context: .., dockerfile: infrastructure/Dockerfile }
+    image: nodelink/nodelinkd:local
+    restart: unless-stopped
+    command: >
+      start --home /data --chain-id ${CHAIN_ID:-nodelink-1} --evm.evm-chain-id 778001
+      --minimum-gas-prices 2000000000anode
+      --json-rpc.enable --json-rpc.address 0.0.0.0:8545 --json-rpc.api eth,net,web3
+    volumes: [ "./data:/data" ]
+    ports: [ "26656:26656" ]          # peer-to-peer only; JSON-RPC stays on the internal network
+    ulimits: { nofile: { soft: 65535, hard: 65535 } }
+    logging: { driver: json-file, options: { max-size: "50m", max-file: "5" } }
+
+  caddy:
+    image: caddy:2.8-alpine
+    restart: unless-stopped
+    depends_on: [ node ]
+    environment: [ "RPC_DOMAIN=${RPC_DOMAIN:?set RPC_DOMAIN in infrastructure/.env}" ]
+    ports: [ "80:80", "443:443" ]
+    volumes: [ "./Caddyfile:/etc/caddy/Caddyfile:ro", "caddy_data:/data" ]
+
+volumes:
+  caddy_data:

@@ -1,0 +1,11 @@
+[profile.default]
+src = "src"
+test = "test"
+script = "script"
+libs = ["lib"]
+solc_version = "0.8.24"
+# shanghai: PUSH0 is supported by the cosmos/evm version pinned in blockchain/versions.env; no Cancun-only opcodes used.
+evm_version = "shanghai"
+optimizer = true
+optimizer_runs = 200
+fuzz = { runs = 512 }

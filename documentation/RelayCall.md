@@ -1,0 +1,9 @@
+# Calls and messages through one relay phone (A → B → C)
+B turns on "Relay calls and messages for others" on Home: B creates a Wi-Fi Direct group and listens on port 39430. A and C each tap Connect on B (both join B's group; they do not need to be in range of each other). A selects C's contact and C selects A's. Each phone's link first tries direct, then asks B to join it with the contact. B pairs the two requests and copies bytes both ways; A and C then run pinned mutual TLS 1.3 end to end through B, so ringing, calls, call quality, and message and mesh exchange work exactly as in a direct link, with "Linked via relay" in the status.
+
+Security: B never holds A's or C's keys and sees only ciphertext, packet sizes and timing (traffic analysis is possible). The fingerprints a phone claims to B are not trusted; a liar only fails the end-to-end TLS check. B can drop or delay traffic; it cannot read, change or forge it. Limits on B: 8 waiting requests, 4 joined pairs, 60 s wait for a partner.
+
+Limits: one relay hop only (no B → D → C chaining yet); both ends must be in B's single Wi-Fi Direct group; transport is TCP, so poor radio links show up as delay and dropped frames (shown live and saved per call), not as concealed packet loss; Android phones differ in how many group clients they accept; B's status shows joined pairs and relayed kilobytes. No physical results recorded.
+
+## Three-phone acceptance
+Place A and C out of range of each other, B between. B: Relay on. A and C: Connect to B, select each other's contact. Both must show Linked via relay. Send a message A → C: it must arrive without tapping anything. Call A → C: C rings, Accept, both hear each other. Note the RECENT CALLS line on both and B's relayed KB. Turn B's relay off: both must show Link lost within 10 s. Repeat at increasing distances and record round trip, drops and gaps per distance and phone model.

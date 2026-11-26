@@ -1,0 +1,12 @@
+[
+ {"name":"ecosystem","ndl":150000000},
+ {"name":"staking-rewards","ndl":200000000},
+ {"name":"treasury","ndl":100000000},
+ {"name":"community","ndl":100000000},
+ {"name":"core-team","ndl":100000000},
+ {"name":"genesis-validators","ndl":100000000},
+ {"name":"presale","ndl":100000000},
+ {"name":"airdrop","ndl":100000000},
+ {"name":"liquidity","ndl":25000000},
+ {"name":"strategic-reserve","ndl":25000000}
+]

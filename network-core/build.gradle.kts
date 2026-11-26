@@ -1,0 +1,4 @@
+plugins { id("com.android.library"); id("org.jetbrains.kotlin.android") }
+android { namespace="org.nodelink.network"; compileSdk=35; defaultConfig { minSdk=29 } }
+dependencies { implementation(project(":identity-core")) }
+dependencies { testImplementation("junit:junit:4.13.2") }

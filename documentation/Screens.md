@@ -1,0 +1,11 @@
+# Screens
+Design: one dark theme for the whole app (Ui.kt): dark blue surfaces, the NODELINK lime accent, rounded cards, fields and buttons, section headers, coloured initials avatars. A top bar shows NODELINK and the live status line; a bottom navigation bar (NavBar.kt) switches between five screens. Home: my identity and QR, nearby phones (discover, connect, probe), mesh and relay tools, auto relay, Wi-Fi/hotspot link. Chats: contact header with avatar and name, bubbles (lime = sent by you, grey = received) with ticks (◷ waiting, ✓ sent via mesh, ✓✓ delivered), composer with Send nearby and Send via mesh. Calls: large avatar and name of the selected contact, call state and timer with live quality, green Call, red Hang up, green Accept / red Decline when ringing, Mute and Speaker toggles that light up when on, measured call history. Contacts: add a contact (scan QR or type fingerprint, name, Save), contact cards with avatar and short ID (tap opens Chats, the green phone button opens Calls, long-press deletes), and blocking and revocation. Wallet: unchanged features in the same theme. Only layout and styling changed; every function behaves as before. Not compiled or seen on a phone yet.
+
+## Design acceptance
+On a phone: all five bottom tabs switch screens and the current one is highlighted; nothing is hidden under the status bar, navigation bar or keyboard; tap a contact: Chats opens with its name; its phone button: Calls opens with its avatar; an incoming call jumps to Calls and shows Accept/Decline.
+
+## Earlier notes
+The app has three tabs. Home: identity, QR, peer field, discovery, contacts, mesh tools, auto relay. Chat: the conversation with the selected contact as bubbles (green = sent by you, grey = received), with Send nearby (direct, needs Exchange messages while connected) and Send via mesh (any distance through other phones). Each bubble shows its status: Queued, Delivered, Sent via mesh, Delivered via mesh, Received, Received via mesh. Call: Start voice call and Hang up for a direct call. The status line stays visible above the tabs.
+
+## Acceptance
+Pick a contact, open Chat: only that contact's messages show. Send nearby and via mesh: both bubbles appear with the right status. After an exchange or mesh sync the chat updates without reopening.

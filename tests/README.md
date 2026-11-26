@@ -1,0 +1,1 @@
+Run gradle :network-core:testDebugUnitTest. Tests cover exact acknowledgments, malformed frames, truncation, and stale nonces. These are framing tests, not radio or TLS integration tests. Physical procedure in the root README.
