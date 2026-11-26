@@ -13,7 +13,7 @@ class MainActivity:Activity(){
  private lateinit var m:WifiP2pManager;private lateinit var ch:WifiP2pManager.Channel
  private lateinit var peers:LinearLayout; private lateinit var status:TextView;private lateinit var pin:EditText
  private lateinit var qr:QrControls;private lateinit var auto:AutoSync
- private var session:Session?=null;private var registered=false;private lateinit var link:Link
+ private lateinit var web:WebScreen;private var session:Session?=null;private var registered=false;private lateinit var link:Link
  private val perm get()=if(Build.VERSION.SDK_INT>=33) Manifest.permission.NEARBY_WIFI_DEVICES else Manifest.permission.ACCESS_FINE_LOCATION
  private fun note(s:String){status.text=s}
  private fun action(ok:String)=object:WifiP2pManager.ActionListener{override fun onSuccess(){note(ok)};override fun onFailure(n:Int){note("Wi-Fi Direct request failed: $n")}}
@@ -30,10 +30,11 @@ class MainActivity:Activity(){
   fun label(s:String)=TextView(this).apply{text=s;box.addView(this)}
   status=TextView(this).apply{text="Not connected"}
   val pages=listOf(home,chatPage,callPage,contactsPage,walletPage);pages.forEach{root.addView(it)};box=home
-  lateinit var nav:NavBar
-  fun show(p:LinearLayout){pages.forEach{it.visibility=if(it===p)android.view.View.VISIBLE else android.view.View.GONE};nav.select(pages.indexOf(p));scroll.scrollTo(0,0);if(p===chatPage)onChat();if(p===callPage)onCall()}
-  nav=NavBar(this,listOf("🏠" to "Home","💬" to "Chats","📞" to "Calls","👥" to "Contacts","👛" to "Wallet")){show(pages[it])}
-  setContentView(LinearLayout(this).apply{orientation=1;setBackgroundColor(Ui.BG);addView(Ui.topBar(this@MainActivity,status));addView(scroll,Ui.lp(-1,0,1f));addView(nav.view)
+  lateinit var nav:NavBar;web=WebScreen(this)
+  fun showWeb(){scroll.visibility=android.view.View.GONE;web.view.visibility=android.view.View.VISIBLE;nav.select(5);web.open()}
+  fun show(p:LinearLayout){scroll.visibility=android.view.View.VISIBLE;web.view.visibility=android.view.View.GONE;pages.forEach{it.visibility=if(it===p)android.view.View.VISIBLE else android.view.View.GONE};nav.select(pages.indexOf(p));scroll.scrollTo(0,0);if(p===chatPage)onChat();if(p===callPage)onCall()}
+  nav=NavBar(this,listOf("🏠" to "Home","💬" to "Chats","📞" to "Calls","👥" to "Contacts","👛" to "Wallet","🔎" to "Explorer")){if(it==5)showWeb() else show(pages[it])}
+  setContentView(LinearLayout(this).apply{orientation=1;setBackgroundColor(Ui.BG);addView(Ui.topBar(this@MainActivity,status));addView(scroll,Ui.lp(-1,0,1f));addView(web.view,Ui.lp(-1,0,1f));addView(nav.view)
    setOnApplyWindowInsetsListener{v,ins->if(Build.VERSION.SDK_INT>=30){val b=ins.getInsets(android.view.WindowInsets.Type.systemBars() or android.view.WindowInsets.Type.ime());v.setPadding(b.left,b.top,b.right,b.bottom)};ins}})
   root.viewTreeObserver.addOnGlobalLayoutListener{Ui.style(root)}   // themes controls as screens add them
   val openCall={show(callPage)}
@@ -84,7 +85,9 @@ class MainActivity:Activity(){
   box=home;btn("Link over Wi-Fi / hotspot"){val d=pin.text.toString().trim().lowercase();when{!LanBeacon.available()->note("Join the same Wi-Fi or phone hotspot as the contact first")
    auto.on->note("Turn off Auto relay first");!d.matches(Regex("[0-9a-f]{64}"))->note("Pick a contact first");else->{link.startLan(d);note("Looking for the contact on this Wi-Fi…")}}}
   btn("Disconnect"){ link.stop();session?.close();session=null;m.removeGroup(ch,action("Group removed"))}
+  box.addView(Button(this).apply{text="Update NODELINK app";setOnClickListener{runCatching{startActivity(Intent(Intent.ACTION_VIEW,android.net.Uri.parse(WebScreen.APK)))}}})
  }
+ @Deprecated("Back handling") override fun onBackPressed(){if(!(::web.isInitialized && web.back()))super.onBackPressed()}
  override fun onStart(){super.onStart();Radio.appVisible=true;Radio.bg?.close();if(!::ch.isInitialized)return;val filter=IntentFilter().apply{addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION)};if(Build.VERSION.SDK_INT>=33)registerReceiver(rx,filter,Context.RECEIVER_EXPORTED) else registerReceiver(rx,filter);registered=true;if(::auto.isInitialized && auto.on)auto.start()}
  override fun onStop(){Radio.appVisible=false;if(::auto.isInitialized)auto.stop();if(registered){unregisterReceiver(rx);registered=false};if(!(::link.isInitialized && link.owns(session))){session?.close();session=null};super.onStop()}   // the link stays up so calls can still ring
  @Deprecated("Activity result API") override fun onActivityResult(r:Int,c:Int,d:Intent?){if(!::qr.isInitialized||!qr.result(r,c,d))super.onActivityResult(r,c,d)}

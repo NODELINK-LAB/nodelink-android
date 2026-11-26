@@ -10,7 +10,7 @@ class NavBar(c:Context,items:List<Pair<String,String>>,private val pick:(Int)->U
  private val cells=mutableListOf<Pair<TextView,TextView>>()
  val view=LinearLayout(c).apply{setBackgroundColor(Ui.SURFACE);setPadding(0,Ui.dp(c,6),0,Ui.dp(c,8))}
  init{items.forEachIndexed{i,(icon,label)->
-  val ic=TextView(c).apply{tag=Ui.DONE;text=icon;textSize=20f;gravity=Gravity.CENTER;setPadding(Ui.dp(c,16),Ui.dp(c,3),Ui.dp(c,16),Ui.dp(c,3))}
+  val ic=TextView(c).apply{tag=Ui.DONE;text=icon;textSize=20f;gravity=Gravity.CENTER;setPadding(Ui.dp(c,10),Ui.dp(c,3),Ui.dp(c,10),Ui.dp(c,3))}
   val tx=TextView(c).apply{tag=Ui.DONE;text=label;textSize=11f;gravity=Gravity.CENTER}
   view.addView(LinearLayout(c).apply{orientation=1;gravity=Gravity.CENTER;addView(ic);addView(tx);setOnClickListener{pick(i)}},Ui.lp(0,-2,1f))
   cells.add(ic to tx)};select(0)}
