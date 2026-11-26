@@ -39,8 +39,8 @@ class WalletScreen(private val a: Activity, box: LinearLayout, private val note:
     addView(LinearLayout(a).apply{orientation=1;setPadding(Ui.dp(a,14),0,0,0);addView(Ui.title(a,"NODE WALLET",16f));addView(Ui.caption(a,"nodelink-1 (chain 778001)"))},Ui.lp(0,-2,1f))
     addView(NeonIcon(a,"next").apply{tint=Ui.TEXT},Ui.lp(Ui.dp(a,18),Ui.dp(a,18)))})
    addView(FrameLayout(a).apply{addView(NeonPanel.wave(a),FrameLayout.LayoutParams(Ui.dp(a,155),-1,android.view.Gravity.END));addView(LinearLayout(a).apply{orientation=1;addView(Ui.caption(a,"Balance"));addView(homeBalance)})},Ui.lp().apply{topMargin=Ui.dp(a,12)});setOnClickListener{open()}})
-  button("↶  Show Recovery Code",group,Ui.BRAND){recovery.performClick()}
-  button("↶  Restore from Recovery Code",group){restore.performClick()}
+  button("↶  Show Recovery Phrase",group,Ui.BRAND){recovery.performClick()}
+  button("↶  Restore Wallet",group){restore.performClick()}
   fun openNetwork(){settings.visibility=android.view.View.VISIBLE;open()}
   group.addView(NeonPanel.row(a,"shield","Validator EVM RPC",homeNetwork,::openNetwork))
   group.addView(NeonPanel.row(a,"refresh","Save Network"){if(chain.rpc.isEmpty())openNetwork() else network.performClick()})
@@ -64,16 +64,25 @@ class WalletScreen(private val a: Activity, box: LinearLayout, private val note:
   box.addView(Ui.card(a).apply{addView(LinearLayout(a).apply{gravity=android.view.Gravity.CENTER_VERTICAL
    addView(NeonIcon(a,"wallet"),Ui.lp(Ui.dp(a,23),Ui.dp(a,23)));addView(Ui.title(a,"NODE",16f),Ui.lp(0,-2,1f).apply{leftMargin=Ui.dp(a,9)});addView(assetBalance,Ui.lp(-2,-2))});addView(address,Ui.lp().apply{topMargin=Ui.dp(a,6)})})
   box.addView(sendPanel);box.addView(settings)
-  recovery=button("Show recovery code", settings,Ui.BRAND) {
-   secure(AlertDialog.Builder(a).setTitle("Recovery code").setMessage(WalletKey.code(seed()) + "\n\nWrite this on paper and keep it offline. Anyone with it can spend this wallet. Nobody can recover it for you.").setPositiveButton("Done", null).create())
+  recovery=button("Show recovery phrase", settings,Ui.BRAND) {
+   val words = EvmWallet.recoveryPhrase(seed()).split(' ').mapIndexed { i, word -> "${i+1}. $word" }.chunked(3).joinToString("\n") { it.joinToString("    ") }
+   secure(AlertDialog.Builder(a).setTitle("24-word NODELINK recovery phrase").setMessage(words + "\n\nWrite the words down in order and keep them offline. Anyone with this phrase can spend your funds. Restore it in NODELINK only.").setPositiveButton("Done", null).create())
   }
-  restore=button("Restore from recovery code", settings) {
-   val input = EditText(a).apply { hint = "55-character recovery code" }
-   secure(AlertDialog.Builder(a).setTitle("Restore wallet").setMessage("This replaces the wallet on this phone. Back up its recovery code first.").setView(input).setNegativeButton("Cancel", null)
-    .setPositiveButton("Restore") { _, _ ->
-     runCatching { val s = WalletKey.seedOf(input.text.toString()); vault.put("seed", Codec.hex(s)); vault.put("evm_sent", "[]"); keys = EvmWallet.fromSeed(s); balance = null; refresh(); note("Wallet restored. Tap Refresh to load its balance.") }
-      .onFailure { note(it.message ?: "Restore failed") }
-    }.create())
+  restore=button("Restore wallet", settings) {
+   val input = EditText(a).apply {
+    hint = "24 words or legacy recovery code"
+    inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD or InputType.TYPE_TEXT_FLAG_MULTI_LINE or InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS
+    imeOptions = android.view.inputmethod.EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING
+    importantForAutofill = android.view.View.IMPORTANT_FOR_AUTOFILL_NO
+    filters = arrayOf(android.text.InputFilter.LengthFilter(512))
+   }
+   val dialog = AlertDialog.Builder(a).setTitle("Restore wallet").setMessage("Use a NODELINK backup only. This replaces the wallet on this phone. Back up your current wallet first.").setView(input).setNegativeButton("Cancel", null).setPositiveButton("Restore", null).create()
+   secure(dialog)
+   dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
+    runCatching { val s = EvmWallet.recoverSeed(input.text.toString()); val restored = EvmWallet.fromSeed(s); vault.put("seed", Codec.hex(s)); vault.put("evm_sent", "[]"); keys = restored; balance = null; refresh() }
+     .onSuccess { input.text.clear(); dialog.dismiss(); note("Wallet restored. Tap Refresh to load its balance.") }
+     .onFailure { input.error = it.message ?: "Restore failed" }
+   }
   }
   val rpc = EditText(a).apply { hint = "Validator EVM RPC, e.g. http://192.168.1.10:8545"; isSingleLine = true; setText(chain.rpc) }; settings.addView(Ui.caption(a,"Validator EVM RPC"));settings.addView(rpc)
   network=button("Save network", settings) {
